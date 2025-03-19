@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <string.h>
+
+void process_assignment();
+void process_arithmetic();
+void process_relational();
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("\n1. Assignment\n2. Arithmetic\n3. Relational\n4. Exit\nEnter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: process_assignment(); break;
+            case 2: process_arithmetic(); break;
+            case 3: process_relational(); break;
+            case 4: return 0;
+            default: printf("Invalid choice!\n");
+        }
+    }
+}
+
+void process_assignment() {
+    char exp[50], lhs[50], rhs[50];
+    
+    printf("\nEnter an assignment expression (e.g., a=b+c): ");
+    scanf("%s", exp);
+
+    char *equal_pos = strchr(exp, '=');
+    if (!equal_pos) {
+        printf("Invalid assignment expression!\n");
+        return;
+    }
+
+    strncpy(lhs, exp, equal_pos - exp);
+    lhs[equal_pos - exp] = '\0';  // Null terminate
+
+    strcpy(rhs, equal_pos + 1);
+
+    printf("Three Address Code:\n");
+    printf("temp = %s\n", rhs);
+    printf("%s = temp\n", lhs);
+}
+
+void process_arithmetic() {
+    char exp[50];
+    
+    printf("\nEnter an arithmetic expression (e.g., a+b*c): ");
+    scanf("%s", exp);
+
+    int i, len = strlen(exp);
+    char op, lhs[10], rhs[10];
+
+    for (i = 0; i < len; i++) {
+        if (strchr("+-*/", exp[i])) {
+            op = exp[i];
+            strncpy(lhs, exp, i);
+            lhs[i] = '\0';
+            strcpy(rhs, exp + i + 1);
+            break;
+        }
+    }
+
+    if (i == len) {
+        printf("Invalid arithmetic expression!\n");
+        return;
+    }
+
+    printf("Three Address Code:\n");
+    printf("temp = %s\n", lhs);
+    printf("temp1 = temp %c %s\n", op, rhs);
+}
+
+void process_relational() {
+    char id1[10], op[5], id2[10];
+    static int addr = 100;
+
+    printf("\nEnter a relational expression (e.g., a < b): ");
+    scanf("%s %s %s", id1, op, id2);
+
+    printf("\n%d\tif %s %s %s goto %d", addr, id1, op, id2, addr + 3);
+    addr++;
+    printf("\n%d\tT := 0", addr);
+    addr++;
+    printf("\n%d\tgoto %d", addr, addr + 2);
+    addr++;
+    printf("\n%d\tT := 1\n", addr);
+}
