@@ -1,0 +1,77 @@
+#include <stdlib.h> 
+#include <string.h> 
+ 
+#define MAX_STACK_SIZE 100 
+ 
+ 
+void init_stack(char stack[], int *top) { 
+    *top = -1; 
+} 
+ 
+ 
+void push(char stack[], int *top, char element) { 
+    if (*top == MAX_STACK_SIZE - 1) { 
+        printf("Stack Overflow\n"); 
+        return; 
+    } 
+    stack[++(*top)] = element; 
+} 
+ 
+ 
+char pop(char stack[], int *top) { 
+    if (*top == -1) { 
+        printf("Stack Underflow\n"); 
+        return '\0'; 
+    } 
+    return stack[(*top)--]; 
+} 
+ 
+ 
+int shift_reduce_parse(char input[]) { 
+    char stack[MAX_STACK_SIZE]; 
+    int top; 
+    int i = 0; 
+    int len = strlen(input); 
+     
+    init_stack(stack, &top); 
+ 
+    while (i < len) { 
+         
+        push(stack, &top, input[i]); 
+        printf("Shift: %s\n", stack); 
+        i++; 
+ 
+         
+        while (top >= 1 && stack[top] == 'b' && stack[top-1] == 'a') {
+        	   pop(stack, &top);  
+            pop(stack, &top);  
+            printf("Reduce: %s\n", stack); 
+            push(stack, &top, 'S');  
+        } 
+ 
+         
+        if (top == 0 && stack[top] == 'S' && i == len) { 
+            return 1;  
+        } 
+    } 
+ 
+     
+    return 0; 
+} 
+ 
+int main() { 
+    char input[MAX_STACK_SIZE]; 
+     
+     
+    printf("Enter the input string: "); 
+    scanf("%s", input); 
+ 
+     
+    if (shift_reduce_parse(input)) { 
+        printf("Input string accepted\n"); 
+    } else { 
+        printf("Input string rejected\n"); 
+    } 
+ 
+    return 0; 
+} 
